@@ -27,7 +27,7 @@ func (h *Handler) UploadFile(c *gin.Context) {
 		return
 	}
 
-	extractedData, err := h.FileUsecase.ReadExcelFile(&file)
+	extractedData, err := h.FileUsecase.ReadExcelFile(file)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
 		return

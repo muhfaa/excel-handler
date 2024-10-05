@@ -1,9 +1,9 @@
 package usecase
 
 import (
-	"mime/multipart"
+	"io"
 )
 
 type FileUsecase interface {
-	ReadExcelFile(file *multipart.File) ([][]string, error)
+	ReadExcelFile(file io.Reader) ([][]string, error)
 }

@@ -1,11 +1,9 @@
 package usecase
 
 import (
-	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
-	"mime/multipart"
 
 	"github.com/xuri/excelize/v2"
 )
@@ -16,16 +14,11 @@ func NewFileUsecase() *FileUsecaseImpl {
 	return &FileUsecaseImpl{}
 }
 
-func (u FileUsecaseImpl) ReadExcelFile(file *multipart.File) ([][]string, error) {
+func (u FileUsecaseImpl) ReadExcelFile(file io.Reader) ([][]string, error) {
 	logCtx := "ReadExcelFile"
-	// Read file content
-	fileBytes, err := ioutil.ReadAll(*file)
-	if err != nil {
-		log.Printf("%v, ERROR: failed to read file: %v", logCtx, err)
-		return nil, err
-	}
 
-	f, err := excelize.OpenReader(bytes.NewReader(fileBytes))
+	// Read file content
+	f, err := excelize.OpenReader(file)
 	if err != nil {
 		log.Printf("%v, ERROR: failed to opening file: %v", logCtx, err)
 		return nil, err
@@ -43,6 +36,11 @@ func (u FileUsecaseImpl) ReadExcelFile(file *multipart.File) ([][]string, error)
 	if err != nil {
 		log.Printf("%v, ERROR: failed getting rows: %v", logCtx, err)
 		return nil, err
+	}
+
+	if len(rows) == 0 {
+		log.Printf("%v, ERROR: no rows found in sheet %v", logCtx, sheetName)
+		return nil, fmt.Errorf("no data found in the Excel file")
 	}
 
 	var data [][]string
